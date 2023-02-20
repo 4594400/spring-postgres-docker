@@ -10,6 +10,7 @@ import ua.doc.repo.EmployeeRepository;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -32,7 +33,18 @@ public class EmployeeController {
         return ResponseEntity.ok().body(employee);
     }
 
-    @DeleteMapping
+    @PutMapping("/employees/{id}")
+    public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Integer id,
+                                                   @RequestBody Employee employeeDetails) {
+        Employee employee = employeeRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Employee with id = " + id + " not exist")
+        );
+        employee.setName(employeeDetails.getName());
+        return ResponseEntity.ok(employee);
+
+    }
+
+    @DeleteMapping("/employees/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable(value = "id") Integer id) {
         Employee employee = employeeRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Employee with id = " + id + " not exist")
